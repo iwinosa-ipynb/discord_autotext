@@ -1,2 +1,2 @@
-discord_autotext.py
+discord_auto_reply.py
 python-dotenv
