@@ -1,4 +1,2 @@
-discord.py
-google-generativeai
+discord_auto_reply.py
 python-dotenv
-aiohttp
