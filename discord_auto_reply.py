@@ -24,11 +24,11 @@ MONITORED_SERVER    = 1274909375584014336        # ← paste your server ID here
 # Right click a CHANNEL → Copy Channel ID (for proactive messages)
 PROACTIVE_CHANNEL   = 1278965518270726185        # ← paste your channel ID here e.g. 987654321098765432
 
-DAILY_LIMIT         = 200
-MIN_DELAY           = 200       # min seconds before replying
-MAX_DELAY           = 350       # max seconds before replying
-COOLDOWN            = 300       # seconds between messages
-IDLE_THRESHOLD      = 300      # seconds idle before proactive message
+DAILY_LIMIT         = 450
+MIN_DELAY           = 50       # min seconds before replying
+MAX_DELAY           = 120       # max seconds before replying
+COOLDOWN            = 100      # seconds between messages
+IDLE_THRESHOLD      = 200      # seconds idle before proactive message
 
 # ── WORD LISTS ────────────────────────────────────────────
 
@@ -170,6 +170,10 @@ async def proactive_loop():
             await asyncio.sleep(60)
             continue
 
+        # Don't go proactive if there are still tagged messages to process
+        if not message_queue.empty():
+            continue
+
         idle_for = time.monotonic() - last_activity_at
         if idle_for < IDLE_THRESHOLD:
             continue
@@ -260,8 +264,10 @@ async def on_message(message):
         )
     )
 
+    # Reset idle timer on ANY message in the server — not just tags
+    last_activity_at = time.monotonic()
+
     if tagged:
-        last_activity_at = time.monotonic()
         print(f"[Tagged] {message.author} in #{message.channel}: {message.content[:80]}")
         if can_send():
             await message_queue.put(message)
