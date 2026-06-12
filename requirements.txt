@@ -1,2 +1,2 @@
-discord_auto_reply.py
+discord.py-self==2.1.0
 python-dotenv
